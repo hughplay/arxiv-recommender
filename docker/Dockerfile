@@ -55,6 +55,7 @@ RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-
     libgl1-mesa-glx \
     libglib2.0-0 \
     fontconfig \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -224,9 +225,15 @@ RUN /usr/local/bin/init_workspace --user ${USER_NAME} --home /home/${USER_NAME}
 RUN cp -r /home/${USER_NAME} /${USER_NAME}_home_bak
 
 
+RUN echo "0 * * * * ${USER_NAME} cd /project && zsh cron_pull.sh >> /log/arxiv.log 2>&1" >> /etc/crontab
+
+
 # Switch to the created user
 USER ${USER_NAME}
 
 
-# Set working directory to /workspace
-WORKDIR "/workspace"
+# Set working directory to /project
+WORKDIR "/project"
+
+
+# add cron job
